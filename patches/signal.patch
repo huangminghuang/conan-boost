@@ -1,0 +1,74 @@
+--- a/boost/process/detail/posix/wait_for_exit.hpp
++++ b/boost/process/detail/posix/wait_for_exit.hpp
+@@ -55,10 +55,10 @@
+         std::error_code & ec) noexcept
+ {
+ 
+-    ::sigset_t  sigset;
++    sigset_t  sigset;
+ 
+-    ::sigemptyset(&sigset);
+-    ::sigaddset(&sigset, SIGCHLD);
++    sigemptyset(&sigset);
++    sigaddset(&sigset, SIGCHLD);
+ 
+     auto get_timespec = 
+             [](const Duration & dur)
+@@ -72,8 +72,8 @@
+     pid_t ret;
+     int status;
+ 
+-    struct ::sigaction old_sig;
+-    if (-1 == ::sigaction(SIGCHLD, nullptr, &old_sig))
++    struct sigaction old_sig;
++    if (-1 == sigaction(SIGCHLD, nullptr, &old_sig))
+     {
+         ec = get_last_error();
+         return false;
+@@ -84,7 +84,7 @@
+     do
+     {
+         auto ts = get_timespec(time_out - Clock::now());
+-        auto ret_sig = ::sigtimedwait(&sigset, nullptr, &ts);
++        auto ret_sig = sigtimedwait(&sigset, nullptr, &ts);
+         errno = 0;
+         ret = ::waitpid(p.pid, &status, WNOHANG);
+ 
+--- a/boost/process/detail/posix/wait_group.hpp
++++ b/boost/process/detail/posix/wait_group.hpp
+@@ -58,11 +58,11 @@
+         std::error_code & ec) noexcept
+ {
+ 
+-    ::sigset_t  sigset;
+-    ::siginfo_t siginfo;
++    sigset_t  sigset;
++    siginfo_t siginfo;
+ 
+-    ::sigemptyset(&sigset);
+-    ::sigaddset(&sigset, SIGCHLD);
++    sigemptyset(&sigset);
++    sigaddset(&sigset, SIGCHLD);
+ 
+     auto get_timespec = 
+             [](const Duration & dur)
+@@ -77,8 +77,8 @@
+     bool timed_out = false;
+     int ret;
+ 
+-    struct ::sigaction old_sig;
+-    if (-1 == ::sigaction(SIGCHLD, nullptr, &old_sig))
++    struct sigaction old_sig;
++    if (-1 == sigaction(SIGCHLD, nullptr, &old_sig))
+     {
+         ec = get_last_error();
+         return false;
+@@ -87,7 +87,7 @@
+     do
+     {
+         auto ts = get_timespec(time_out - Clock::now());
+-        ret = ::sigtimedwait(&sigset, nullptr, &ts);
++        ret = sigtimedwait(&sigset, nullptr, &ts);
+         errno = 0;
+         if ((ret == SIGCHLD) && (old_sig.sa_handler != SIG_DFL) && (old_sig.sa_handler != SIG_IGN))
+             old_sig.sa_handler(ret);
